@@ -6,6 +6,7 @@ Se configuraron las variables de estado y horarios base para la simulación.
     * `TipoPublicacion`: Entero (1=Libro, 2=Revista, 3=Manual, 4=Institucional).
     * `TotalRevisiones`: Entero (Meta de revisiones necesaria: 1, 2 o 3).
     * `Contador`: Entero (Acumulador de revisiones realizadas).
+    * `Pagina`: Entero (Paginas posibles que puede tener un manuscrito).
 * **WorkSchedule (`StandardWeek`):**
     * Configurado según restricción laboral: Lunes a Viernes, **07:00-12:00** y **13:00-15:00**.
 * **Colores Entidades (Manuscrito):**

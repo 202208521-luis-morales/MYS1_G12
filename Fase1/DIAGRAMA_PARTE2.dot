@@ -1,0 +1,79 @@
+digraph CorreccionEstilo {
+    rankdir=TB;
+    node [shape=box, style="rounded,filled", fontname="Arial", fontsize=11];
+    edge [fontname="Arial", fontsize=10];
+    
+    // ============ ENTRADA ============
+    Entrada [label="📥 Desde Evaluación Editorial\n(Convergencia)", fillcolor="#81C784", shape=ellipse];
+    TransferIn [label="🔽 TransferNode\nEntrada_Correccion", fillcolor="#FFF176", shape=ellipse];
+    
+    Entrada -> TransferIn [penwidth=2];
+    
+    // ============ SERVIDOR CORRECTOR ============
+    subgraph cluster_corrector {
+        label="Server_Corrector (Capacity: 1)";
+        style=filled;
+        fillcolor="#FFEBEE";
+        
+        InputCorrector [label="📍 InputNode", fillcolor="#FFCDD2", shape=circle];
+        ProcessCorrector [label="⚙️ Processing Time:\n\nMath.If(Manuscrito.EsRecorreccion == True,\n    Random.Triangular(1, 2, 4),  ← Re-corrección\n    Random.Uniform(3, 5))        ← Primera vez\n\nUnits: Days\nCosto: 55.19 Q/h", fillcolor="#EF5350", fontcolor=white, fontsize=10];
+        OutputCorrector [label="📍 OutputNode", fillcolor="#FFCDD2", shape=circle];
+        
+        InputCorrector -> ProcessCorrector;
+        ProcessCorrector -> OutputCorrector;
+    }
+    
+    TransferIn -> InputCorrector [label="100% manuscritos\nEsRecorreccion = False"];
+    
+    // ============ DELAY EDITOR ============
+    subgraph cluster_editor {
+        label="Server_EsperaEditor (Delay, no recurso)";
+        style=filled;
+        fillcolor="#E3F2FD";
+        
+        InputEditor [label="📍 InputNode", fillcolor="#BBDEFB", shape=circle];
+        ProcessEditor [label="⏳ Processing Time:\nRandom.Uniform(1, 3) Days\n\nCapacity: Infinity\n'Editor aplica correcciones'", fillcolor="#42A5F5", fontcolor=white];
+        OutputEditor [label="📍 OutputNode\n\n⚡ State Assignment (On Exiting):\nManuscrito.NecesitaRetrabajo =\n  Random.Uniform(0,1) <= 0.15 ? 1 : 0", fillcolor="#BBDEFB", shape=circle];
+        
+        InputEditor -> ProcessEditor;
+        ProcessEditor -> OutputEditor;
+    }
+    
+    OutputCorrector -> InputEditor [label="Corrector entrega\nretroalimentación"];
+    
+    // ============ DECISIÓN ============
+    Decide [label="❓ DECISIÓN\n\nPath Selection Weight:\n• Path A: NecesitaRetrabajo == 0\n• Path B: NecesitaRetrabajo == 1", fillcolor="#FFF59D", shape=diamond, fontsize=10];
+    
+    OutputEditor -> Decide;
+    
+    // ============ SALIDAS ============
+    TransferLoop [label="🔄 TransferNode\nLoop_Recorreccion\n\n⚡ State Assignment (On Entered):\nManuscrito.EsRecorreccion = True", fillcolor="#FFAB91", shape=ellipse];
+    TransferOut [label="✅ TransferNode\nSalida_Correccion\n(Hacia Diagramación)", fillcolor="#C8E6C9", shape=ellipse];
+    
+    // Paths con probabilidades
+    Decide -> TransferOut [label="Path A: NO retrabajo (85%)\nNecesitaRetrabajo == 0", color=green, penwidth=3];
+    Decide -> TransferLoop [label="Path B: SÍ retrabajo (15%)\nNecesitaRetrabajo == 1", color=red, penwidth=3];
+    
+    // Loop de regreso
+    TransferLoop -> InputCorrector [label="Regresa con flag:\nEsRecorreccion = True\n\nAhora usará Triangular(1,2,4)", color=red, style=bold, penwidth=2];
+    
+    // ============ NOTAS ============
+    subgraph cluster_notas {
+        label="📌 Variables de Estado (Entity: Manuscrito)";
+        style=dashed;
+        fillcolor="#FFFDE7";
+        
+        nota [label="• EsRecorreccion: Boolean (False por defecto)\n• NecesitaRetrabajo: Integer (0 o 1)\n\nLógica:\n1. Primera vez → U(3,5) días\n2. Si NecesitaRetrabajo = 1 → Marca EsRecorreccion = True\n3. Segunda pasada → Triangular(1,2,4) días\n4. Loop puede repetirse N veces (cada vez 15% probabilidad)", shape=note, fillcolor="#FFF9C4", fontsize=9];
+    }
+    
+    TransferOut -> nota [style=invis];
+    
+    // ============ EJEMPLO DE EJECUCIÓN ============
+    subgraph cluster_ejemplo {
+        label="🎯 Ejemplo de Ejecución";
+        style=dashed;
+        fillcolor="#F3E5F5";
+        
+        ej [label="Manuscrito #42 (Libro):\n\n1. Entra con EsRecorreccion = False\n2. Corrector revisa: 4.2 días (U 3-5)\n3. Editor corrige: 2.1 días (U 1-3)\n4. Decisión: Random = 0.12 → Retrabajo ✓\n5. Marca EsRecorreccion = True\n6. Regresa al Corrector\n7. Re-corrección: 2.8 días (Tri 1,2,4)\n8. Editor revisa: 1.5 días (U 1-3)\n9. Decisión: Random = 0.87 → Aprobado ✓\n10. Sale a Diagramación\n\nTiempo total: 10.6 días", shape=note, fillcolor="#E1BEE7", fontsize=9, style="filled,bold"];
+    }
+}
