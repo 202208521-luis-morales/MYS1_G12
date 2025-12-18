@@ -1,4 +1,4 @@
 Time(Hours);EntityID;ObjectName;ProcessID;StepName;Action
-0;Source1;Source1;1.OnEntityArrival;[SetRow] BeforeCreatingEntities;Unable to get value of property 'SetRow.RowNumber'.
-0;Source1;Source1;1.OnEntityArrival;[SetRow] BeforeCreatingEntities;Data type mismatch. Unable to convert value 'SenorPresidente' from type 'Element Reference' to type 'Number'.
+122;--;--;--;--;The maximum number in system limit for entities of type 'SenorPresidente' has been exceeded.
+122;--;--;--;--;Possible causes:
 
